@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko-KR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>반응속도 테스트</title>
+    <style>
+        * {
+            margin: 0 auto;
+            padding: 0;
+            color: black;
+        }
+
+        body {
+            position: fixed;
+            width: 100% !important;
+            height: 100% !important;
+            background: lightskyblue;
+        }
+
+        .buttonStyle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 200px;
+            font-size: 50px;
+            font-weight: bold;
+        }
+
+        #startBtn {
+            display: block;
+        }
+
+        #waitBtn {
+            display: none;
+            background-color: red;
+        }
+
+        #clickBtn {
+            display: none;
+            background-color: green;
+        }
+
+        #reStart {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -70%);
+            width: 100px;
+            height: 40px;
+            background-color: lightsalmon;
+        }
+
+        #record {
+            list-style: none;
+            position: absolute;
+            width: 100px;
+            height: 250px;
+            top: 37%;
+            left: 20%;
+            transform: translateX(-20%);
+            font-weight: bold;
+            line-height: 50px;
+            border: 1px solid black;
+            text-align: center;
+        }
+
+        #result {
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <button type="button" class="buttonStyle" id="startBtn" onclick="start()">START</button>
+    <button type="button" class="buttonStyle" id="waitBtn" onclick="clickIfWait()">WAITTING....</button>
+    <button type="button" class="buttonStyle" id="clickBtn">CLICK!!</button>
+    <button type="button" id="reStart" onclick="window.location.reload()">RESTART</button>
+    <div class="buttonStyle" id="result">결과 값</div>
+    <ul id="record"></ul>
+    <script>
+        const startBtn = document.getElementById('startBtn');
+        const waitBtn = document.getElementById('waitBtn');
+        const clickBtn = document.getElementById('clickBtn');
+
+        let started = false;
+
+        let totalTime = 0;
+
+        let startedTime;
+        let endedTime;
+        let randomTime;
+        let waitTime;
+        let currentTime;
+
+        let cnt = 1;
+
+        function start() {
+
+            started = true;
+
+
+            startBtn.style.display = 'none';
+            waitBtn.style.display = 'block';
+
+            randomTime = Math.random() * 3000 + 2000;
+            console.log(randomTime);
+            waitTime = setTimeout(() => click(), randomTime);
+        }
+
+        function clickIfWait() {
+            alert("아직 시작 안했는뒈....");
+            waitBtn.style.display = 'block';
+            window.clearTimeout(waitTime);
+            start();
+        }
+
+        function click() {
+            waitBtn.style.display = 'none';
+            clickBtn.style.display = 'block';
+            startedTime = new Date().getTime();
+
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (cnt <= 5) {
+                if (started) {
+                    if (e.keyCode === 32) {
+                        endedTime = new Date().getTime();
+                        let currentT = Number(endedTime - startedTime); // Convert to number
+                        let currentLi = document.createElement('li');
+                        currentLi.textContent = currentT + 'ms';
+                        console.log("시작시간 : " + startedTime + "\n끝난시간 : " + endedTime + "\n걸린시간 : " + currentT);
+                        if (cnt <= 5) {
+                            document.getElementById('record').appendChild(currentLi);
+                            totalTime += currentT;
+                        }
+                        cnt++;
+                        started = false;
+                        if (cnt <= 5) {
+                            clickBtn.style.display = 'none';
+                            waitBtn.style.display = 'block';
+                            start();
+                        } else {
+                            clickBtn.style.display = 'none';
+                            waitBtn.style.display = 'none';
+                            startBtn.style.display = 'none';
+                            document.getElementById('result').style.display = 'block';
+                            document.querySelector('#result').innerHTML = "평균 값 : " + totalTime / 5 + "ms";
+                        }
+                        e.preventDefault();
+                    }
+                }
+            }
+        });
+
+        /*clickBtn.addEventListener('click', function () {
+            if (cnt <= 5) {
+                if (started) {
+                    endedTime = new Date().getTime();
+                    let currentT = Number(endedTime - startedTime); // Convert to number
+                    let currentLi = document.createElement('li');
+                    currentLi.textContent = currentT + 'ms';
+                    console.log("시작시간 : " + startedTime + "\n끝난시간 : " + endedTime + "\n걸린시간 : " + currentT);
+                    if (cnt <= 5) {
+                        document.getElementById('record').appendChild(currentLi);
+                        totalTime += currentT;
+                    }
+                    cnt++;
+                    started = false;
+                    if (cnt <= 5) {
+                        clickBtn.style.display = 'none';
+                        waitBtn.style.display = 'block';
+                        start();
+                    } else {
+                        clickBtn.style.display = 'none';
+                        waitBtn.style.display = 'none';
+                        startBtn.style.display = 'none';
+                        document.getElementById('result').style.display = 'block';
+                        document.querySelector('#result').innerHTML = "평균 값 : " + totalTime / 5 + "ms";
+                    }
+                }
+            }
+        });*/
+    </script>
+</body>
+
+</html>
